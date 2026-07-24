@@ -1,0 +1,206 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StatusVerifikasi {
+  MENUNGGU
+  TERVERIFIKASI
+  DITOLAK
+}
+
+enum StatusServis {
+  PENDING
+  DITERIMA
+  DIPROSES
+  SELESAI
+  DITOLAK
+}
+
+enum StatusPembelian {
+  PENDING
+  LUNAS
+  DIKIRIM
+  SELESAI
+  DIBATALKAN
+}
+
+enum TipeServis {
+  DIAGNOSA
+  PERBAIKAN_HARDWARE
+  PERBAIKAN_SOFTWARE
+  UPGRADE_KOMPONEN
+  LAINNYA
+}
+
+model Administrator {
+  id        String   @id @default(cuid()) @map("admin_id")
+  nama      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  verifikasiCustomer VerifikasiCustomer[]
+  verifikasiMitra    VerifikasiMitra[]
+
+  @@map("administrators")
+}
+
+model Customer {
+  id               String           @id @default(cuid()) @map("customer_id")
+  nama             String
+  email            String           @unique
+  password         String
+  alamat           String?
+  noHp             String           @map("no_hp")
+  statusVerifikasi StatusVerifikasi @default(MENUNGGU) @map("status_verifikasi")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  verifikasi       VerifikasiCustomer[]
+  reservasi        ReservasiServis[]
+  pembelianBarang  PembelianBarang[]
+  chatBot          ChatBot[]
+
+  @@map("customers")
+}
+
+model VerifikasiCustomer {
+  id               String           @id @default(cuid()) @map("verifikasi_customer_id")
+  adminId          String           @map("admin_id")
+  customerId       String           @map("customer_id")
+  statusVerifikasi StatusVerifikasi @default(MENUNGGU) @map("status_verifikasi")
+  tanggalVerifikasi DateTime?       @map("tanggal_verifikasi")
+  createdAt        DateTime         @default(now()) @map("created_at")
+
+  admin    Administrator @relation(fields: [adminId], references: [id])
+  customer Customer      @relation(fields: [customerId], references: [id])
+
+  @@map("verifikasi_customer")
+}
+
+model MitraPenyediaJasa {
+  id               String           @id @default(cuid()) @map("mitra_id")
+  namaToko         String           @map("nama_toko")
+  pemilik          String
+  email            String           @unique
+  password         String
+  alamat           String
+  noHp             String           @map("no_hp")
+  jenisBadanUsaha  String?          @map("jenis_badan_usaha")
+  nomorIzinUsaha   String?          @map("nomor_izin_usaha")
+  fotoTokoUrl      String?          @map("foto_toko_url")
+  latitude         Float?
+  longitude        Float?
+  jamOperasional   String?          @map("jam_operasional")
+  statusVerifikasi StatusVerifikasi @default(MENUNGGU) @map("status_verifikasi")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  verifikasi VerifikasiMitra[]
+  reservasi  ReservasiServis[]
+  barang     Barang[]
+
+  @@map("mitra_penyedia_jasa")
+}
+
+model VerifikasiMitra {
+  id                String           @id @default(cuid()) @map("verifikasi_mitra_id")
+  adminId           String           @map("admin_id")
+  mitraId           String           @map("mitra_id")
+  statusVerifikasi  StatusVerifikasi @default(MENUNGGU) @map("status_verifikasi")
+  tanggalVerifikasi DateTime?        @map("tanggal_verifikasi")
+  catatan           String?
+  createdAt         DateTime         @default(now()) @map("created_at")
+
+  admin Administrator     @relation(fields: [adminId], references: [id])
+  mitra MitraPenyediaJasa @relation(fields: [mitraId], references: [id])
+
+  @@map("verifikasi_mitra")
+}
+
+model ReservasiServis {
+  id                String       @id @default(cuid()) @map("reservasi_id")
+  customerId        String       @map("customer_id")
+  mitraId           String       @map("mitra_id")
+  namaCustomer      String       @map("nama_customer")
+  noTelp            String       @map("no_telp")
+  modelLaptop       String       @map("model_laptop")
+  tipeServis        TipeServis   @default(LAINNYA) @map("tipe_servis")
+  deskripsiKeluhan  String       @map("deskripsi_keluhan") @db.Text
+  tanggalReservasi  DateTime     @map("tanggal_reservasi")
+  estimasiBiaya     Decimal?     @map("estimasi_biaya") @db.Decimal(12, 2)
+  statusServis      StatusServis @default(PENDING) @map("status_servis")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  customer     Customer          @relation(fields: [customerId], references: [id])
+  mitra        MitraPenyediaJasa @relation(fields: [mitraId], references: [id])
+  statusLog    ReservasiStatusLog[]
+
+  @@index([mitraId, statusServis])
+  @@map("reservasi_servis")
+}
+
+model ReservasiStatusLog {
+  id            String       @id @default(cuid())
+  reservasiId   String       @map("reservasi_id")
+  statusServis  StatusServis @map("status_servis")
+  catatan       String?
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  reservasi ReservasiServis @relation(fields: [reservasiId], references: [id], onDelete: Cascade)
+
+  @@map("reservasi_status_log")
+}
+
+model ChatBot {
+  id             String   @id @default(cuid()) @map("chat_id")
+  customerId     String   @map("customer_id")
+  pesanCustomer  String   @map("pesan_customer") @db.Text
+  balasanChatbot String   @map("balasan_chatbot") @db.Text
+  intent         String?
+  waktuChat      DateTime @default(now()) @map("waktu_chat")
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@map("chat_bot")
+}
+
+model Barang {
+  id          String   @id @default(cuid()) @map("barang_id")
+  mitraId     String   @map("mitra_id")
+  namaBarang  String   @map("nama_barang")
+  harga       Decimal  @db.Decimal(12, 2)
+  stok        Int      @default(0)
+  deskripsi   String?  @db.Text
+  gambarUrl   String?  @map("gambar_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  mitra           MitraPenyediaJasa @relation(fields: [mitraId], references: [id])
+  pembelianBarang PembelianBarang[]
+
+  @@map("barang")
+}
+
+model PembelianBarang {
+  id                String          @id @default(cuid()) @map("pembelian_id")
+  customerId        String          @map("customer_id")
+  barangId          String          @map("barang_id")
+  tanggalPembelian  DateTime        @default(now()) @map("tanggal_pembelian")
+  jumlah            Int
+  totalHarga        Decimal         @map("total_harga") @db.Decimal(12, 2)
+  statusPembelian   StatusPembelian @default(PENDING) @map("status_pembelian")
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  barang   Barang   @relation(fields: [barangId], references: [id])
+
+  @@map("pembelian_barang")
+}
