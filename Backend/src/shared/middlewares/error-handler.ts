@@ -11,9 +11,10 @@ export const errorHandler: ErrorRequestHandler = (error, _req, res, _next) => {
     return;
   }
 
+  console.error(error); // tambahan: biar error asli kelihatan di terminal
+
   res.status(500).json({
     success: false,
     message: "Internal server error",
   });
 };
-

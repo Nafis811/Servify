@@ -1,7 +1,9 @@
-export interface AuthenticatedUser {
+﻿export interface AuthenticatedUser {
   id: string;
   email: string;
   role: "customer" | "admin";
+  name?: string;
+  phone?: string;
 }
 
 declare global {
@@ -13,4 +15,3 @@ declare global {
 }
 
 export {};
-

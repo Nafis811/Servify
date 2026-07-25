@@ -1,4 +1,4 @@
-import cors from "cors";
+﻿import cors from "cors";
 import express from "express";
 import { env } from "./config/env";
 import { authRoutes } from "./modules/auth/auth.routes";
@@ -6,6 +6,7 @@ import { landingRoutes } from "./modules/landing/landing.routes";
 import { marketplaceRoutes } from "./modules/marketplace/marketplace.routes";
 import { merchantRoutes } from "./routes/merchant.routes";
 import { chatbotRoutes } from "./routes/chatbot.routes";
+import { customerRoutes } from "./routes/customer.routes";
 import { errorHandler } from "./shared/middlewares/error-handler";
 import { notFound } from "./shared/middlewares/not-found";
 
@@ -35,6 +36,7 @@ app.use("/api/marketplace", marketplaceRoutes);
 app.use("/api/landing", landingRoutes);
 app.use("/api/merchant", merchantRoutes);
 app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/customer", customerRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
