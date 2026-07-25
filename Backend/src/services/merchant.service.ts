@@ -97,12 +97,23 @@ export const merchantService = {
   },
 
   async listNearby(lat: number, lng: number, radiusKm = 10) {
-    // Untuk skala kecil, filter jarak dilakukan di aplikasi (bukan di query database).
     const mitraTerverifikasi = await prisma.mitraPenyediaJasa.findMany({
       where: {
         statusVerifikasi: "TERVERIFIKASI",
         latitude: { not: null },
         longitude: { not: null },
+      },
+      select: {
+        id: true,
+        namaToko: true,
+        pemilik: true,
+        alamat: true,
+        noHp: true,
+        latitude: true,
+        longitude: true,
+        jamOperasional: true,
+        fotoTokoUrl: true,
+        statusVerifikasi: true,
       },
     });
 
