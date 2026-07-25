@@ -29,4 +29,19 @@ export const merchantController = {
     const summary = await merchantService.getDashboardSummary(mitraId);
     res.status(200).json({ success: true, data: summary });
   }),
+
+  // GET /api/merchant/nearby?lat=...&lng=...
+  listNearby: asyncHandler(async (req: Request, res: Response) => {
+    const lat = parseFloat(req.query.lat as string);
+    const lng = parseFloat(req.query.lng as string);
+    const radius = req.query.radius ? parseFloat(req.query.radius as string) : undefined;
+
+    if (Number.isNaN(lat) || Number.isNaN(lng)) {
+      res.status(400).json({ success: false, message: "Parameter lat & lng wajib diisi angka" });
+      return;
+    }
+
+    const data = await merchantService.listNearby(lat, lng, radius);
+    res.status(200).json({ success: true, data });
+  }),
 };
