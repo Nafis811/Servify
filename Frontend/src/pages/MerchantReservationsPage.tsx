@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Clock, CheckCircle2, XCircle, Wrench, CalendarCheck, ArrowRight, RefreshCw } from "lucide-react";
 import { listMerchantReservasi, updateReservasiStatus } from "../features/merchant/merchant.api";
 import { getMitraId } from "../features/merchant/merchant.session";
 import type { ReservasiServis, StatusServis } from "../features/merchant/merchant.types";
@@ -103,7 +104,9 @@ export function MerchantReservationsPage() {
   return (
     <div className="page-container merchant-page">
       <div className="merchant-header">
-        <h1 className="merchant-title">Manajemen Reservasi Service</h1>
+        <h1 className="merchant-title" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <CalendarCheck size={24} /> Manajemen Reservasi Service
+        </h1>
       </div>
 
       {errorMessage && <p className="auth-message auth-message--error">{errorMessage}</p>}
@@ -128,18 +131,21 @@ export function MerchantReservationsPage() {
             <p className="stat-card__label">Menunggu Dikerjakan</p>
             <p className="stat-card__value stat-card__value--warning">{stats.pending}</p>
           </div>
+          <div className="stat-card__icon"><Clock size={24} /></div>
         </div>
         <div className="stat-card">
           <div>
             <p className="stat-card__label">Sedang Dikerjakan</p>
             <p className="stat-card__value">{stats.diproses}</p>
           </div>
+          <div className="stat-card__icon"><Wrench size={24} /></div>
         </div>
         <div className="stat-card stat-card--success">
           <div>
             <p className="stat-card__label">Selesai</p>
             <p className="stat-card__value stat-card__value--success">{stats.selesai}</p>
           </div>
+          <div className="stat-card__icon"><CheckCircle2 size={24} /></div>
         </div>
       </div>
 
@@ -180,14 +186,15 @@ export function MerchantReservationsPage() {
                   </td>
                   <td>
                     <div className="table-actions">
-                      <button className="btn-table btn-table--primary" onClick={() => openModal(reservasi)}>
-                        Update
+                      <button className="btn-table btn-table--primary" onClick={() => openModal(reservasi)} style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                        <RefreshCw size={13} /> Update
                       </button>
                       <button
                         className="btn-table btn-table--secondary"
                         onClick={() => navigate(`/merchant/reservations/${reservasi.id}`)}
+                        style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem" }}
                       >
-                        Detail
+                        Detail <ArrowRight size={13} />
                       </button>
                     </div>
                   </td>
@@ -236,11 +243,12 @@ export function MerchantReservationsPage() {
                   className="button button--primary"
                   onClick={handleUpdateStatus}
                   disabled={isSubmitting}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}
                 >
-                  {isSubmitting ? "Menyimpan..." : "Update"}
+                  <RefreshCw size={15} /> {isSubmitting ? "Menyimpan..." : "Update"}
                 </button>
-                <button className="button button--ghost" onClick={closeModal} disabled={isSubmitting}>
-                  Batal
+                <button className="button button--ghost" onClick={closeModal} disabled={isSubmitting} style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+                  <XCircle size={15} /> Batal
                 </button>
               </div>
             </div>

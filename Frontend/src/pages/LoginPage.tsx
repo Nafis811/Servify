@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../features/auth/auth.api";
+import { getMerchantStatusByEmail } from "../features/merchant/merchant.api";
+import { setMitraId } from "../features/merchant/merchant.session";
 import type { LoginFormState } from "../features/auth/auth.types";
 
 const initialForm: LoginFormState = {
@@ -40,9 +42,38 @@ export function LoginPage() {
     setStatus({ kind: "loading", message: "" });
 
     try {
-      await loginUser(form);
-      setStatus({ kind: "success", message: "Login berhasil." });
-      timeoutRef.current = window.setTimeout(() => {
+      const session = await loginUser(form);
+      const isAdmin = session?.user?.role === "admin";
+
+      setStatus({
+        kind: "success",
+        message: isAdmin ? "Login Admin berhasil. Mengalihkan..." : "Login berhasil.",
+      });
+
+      timeoutRef.current = window.setTimeout(async () => {
+        if (isAdmin) {
+          navigate("/admin");
+          return;
+        }
+
+        // Cek status merchant → redirect ke dashboard/waiting jika sudah daftar
+        try {
+          const merchantProfile = await getMerchantStatusByEmail(session.user.email);
+          if (merchantProfile) {
+            setMitraId(merchantProfile.id);
+            if (merchantProfile.statusVerifikasi === "TERVERIFIKASI") {
+              navigate("/merchant/dashboard");
+              return;
+            }
+            if (merchantProfile.statusVerifikasi === "MENUNGGU") {
+              navigate("/merchant/waiting");
+              return;
+            }
+          }
+        } catch {
+          // Gagal cek merchant → tetap ke home
+        }
+
         navigate("/");
       }, 900);
     } catch (error) {

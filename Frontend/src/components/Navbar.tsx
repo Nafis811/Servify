@@ -53,7 +53,9 @@ export function Navbar() {
                   Dashboard Admin
                 </Link>
               ) : (
-                <Link to="/merchant/register">Daftar Merchant</Link>
+                <Link className="nav-action nav-action--merchant" to="/merchant/info">
+                  Jadi Mitra
+                </Link>
               )}
 
               <button className="nav-action nav-action--logout" type="button" onClick={handleLogout}>
@@ -62,8 +64,9 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
+              <Link to="/merchant/info">Jadi Mitra</Link>
+              <Link className="nav-action nav-action--login" to="/login">Login</Link>
+              <Link className="nav-action nav-action--register" to="/register">Register</Link>
             </>
           )}
         </nav>
@@ -71,3 +74,4 @@ export function Navbar() {
     </header>
   );
 }
+

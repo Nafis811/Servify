@@ -9,12 +9,25 @@ export interface MerchantProfile {
   email: string;
   alamat: string;
   noHp: string;
-  jamOperasional: string | null;
-  fotoTokoUrl: string | null;
-  latitude: number | null;
-  longitude: number | null;
+  jenisBadanUsaha?: string | null;
+  nomorIzinUsaha?: string | null;
+  fotoTokoUrl?: string | null;
+  fotoKtpUrl?: string | null;
+  jamOperasional?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   statusVerifikasi: StatusVerifikasi;
   createdAt: string;
+}
+
+export interface RegisterMerchantInput {
+  business_name: string;
+  address: string;
+  phone: string;
+  email: string;
+  business_type: string;
+  license_number: string;
+  fotoKtp: string; // Base64 or Data URL for Cloudinary upload
 }
 
 export interface MerchantDashboardSummary {

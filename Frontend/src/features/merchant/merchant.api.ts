@@ -5,17 +5,43 @@ import type {
   MerchantDashboardSummary,
   MerchantProfile,
   NearbyMerchant,
+  RegisterMerchantInput,
   ReservasiDetail,
   ReservasiServis,
   StatusServis,
   UpdateStatusInput,
 } from "./merchant.types";
 
+export const registerMerchant = (input: RegisterMerchantInput) =>
+  apiFetch<MerchantProfile>("/merchant/register", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+
+export const getMerchantStatusByEmail = (email: string) =>
+  apiFetch<MerchantProfile | null>(`/merchant/status${toQueryString({ email })}`);
+
+export const getPendingMerchantsAdmin = () =>
+  apiFetch<MerchantProfile[]>("/admin/pending-merchants");
+
+export const getAllMerchantsAdmin = () =>
+  apiFetch<MerchantProfile[]>("/admin/merchants");
+
+export const approveMerchantAdmin = (id: string) =>
+  apiFetch<MerchantProfile>(`/admin/merchants/${id}/approve`, {
+    method: "POST",
+  });
+
+export const rejectMerchantAdmin = (id: string) =>
+  apiFetch<MerchantProfile>(`/admin/merchants/${id}/reject`, {
+    method: "POST",
+  });
+
 export const getMerchantProfile = (mitraId: string) =>
   apiFetch<MerchantProfile>(`/merchant/${mitraId}`);
 
 export const getMerchantDashboardSummary = (mitraId: string) =>
-  apiFetch<MerchantDashboardSummary>(`/merchant/${mitraId}/dashboard-summary`);
+  apiFetch<MerchantDashboardSummary>(`/merchant/${mitraId}/dashboard`);
 
 export const listMerchantReservasi = (mitraId: string, status?: StatusServis) =>
   apiFetch<ReservasiServis[]>(`/merchant/${mitraId}/reservasi${toQueryString({ status })}`);

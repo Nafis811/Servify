@@ -1,4 +1,4 @@
-﻿import type { Session, User } from "@supabase/supabase-js";
+import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../../services/supabase";
 import { apiFetch } from "../../services/api";
 import { clearStoredSession, storeSession } from "./auth.session";
@@ -56,18 +56,35 @@ const syncCustomerToBackend = async () => {
 };
 
 export const loginUser = async (payload: LoginFormState) => {
+  // Try Supabase Auth first
   const { data, error } = await supabase.auth.signInWithPassword(payload);
-  if (error) {
-    throw new Error(error.message);
+
+  if (!error && data.session) {
+    const authSession = toAuthSession(data.session);
+    if (!authSession) throw new Error("Login session is unavailable");
+    storeSession(authSession);
+    await syncCustomerToBackend();
+    return authSession;
   }
-  const authSession = toAuthSession(data.session);
-  if (!authSession) {
-    throw new Error("Login session is unavailable");
+
+  // Supabase Auth gagal → coba login ke backend (untuk admin di public.administrators)
+  try {
+    const res = await apiFetch<{ user: AuthSession["user"]; tokens: AuthSession["tokens"] }>(
+      "/auth/login",
+      {
+        method: "POST",
+        body: JSON.stringify({ email: payload.email, password: payload.password }),
+      }
+    );
+    const authSession: AuthSession = { user: res.user, tokens: res.tokens };
+    storeSession(authSession);
+    return authSession;
+  } catch {
+    // Lempar error asli dari Supabase
+    throw new Error(error?.message ?? "Invalid login credentials");
   }
-  storeSession(authSession);
-  await syncCustomerToBackend();
-  return authSession;
 };
+
 
 export const registerUser = async (payload: RegisterFormState) => {
   const { data, error } = await supabase.auth.signUp({

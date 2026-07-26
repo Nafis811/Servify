@@ -1,27 +1,51 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { marketplaceProducts } from "../features/marketplace/marketplace.copy";
+import { Star, MapPin, Store, ArrowLeft, Package } from "lucide-react";
+import { getMarketplaceProduct } from "../features/marketplace/marketplace.api";
 import type { MarketplaceProduct } from "../features/marketplace/marketplace.types";
 
-const currency = new Intl.NumberFormat("id-ID", {
-  maximumFractionDigits: 0,
-});
+const currency = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 });
 
 export function ProductDetailPage() {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState<MarketplaceProduct | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  const product = useMemo(() => marketplaceProducts.find((item) => item.id === id) ?? null, [id]);
+  useEffect(() => {
+    if (!id) { setNotFound(true); setIsLoading(false); return; }
+    setIsLoading(true);
+    getMarketplaceProduct(id)
+      .then((data) => {
+        if (data) setProduct(data);
+        else setNotFound(true);
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setIsLoading(false));
+  }, [id]);
 
-  if (!product) {
+  if (isLoading) {
     return (
       <div className="detail-page">
         <div className="detail-card detail-empty">
+          <p style={{ color: "var(--muted)" }}>Memuat detail produk...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (notFound || !product) {
+    return (
+      <div className="detail-page">
+        <div className="detail-card detail-empty">
+          <Package size={48} style={{ opacity: 0.3, margin: "0 auto 1rem" }} />
           <p className="eyebrow">Marketplace</p>
           <h1>Produk tidak ditemukan</h1>
-          <p>Produk yang diminta tidak tersedia di data saat ini.</p>
+          <p>Produk yang diminta tidak tersedia atau telah dihapus.</p>
           <Link className="button button--primary" to="/marketplace">
-            Kembali ke marketplace
+            <ArrowLeft size={16} style={{ marginRight: "0.4rem" }} />
+            Kembali ke Marketplace
           </Link>
         </div>
       </div>
@@ -31,6 +55,14 @@ export function ProductDetailPage() {
   return (
     <div className="detail-page">
       <section className="detail-card space-y-6">
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
+          <Link to="/marketplace" style={{ color: "var(--muted)", display: "inline-flex", alignItems: "center", gap: "0.3rem", fontSize: "0.9rem" }}>
+            <ArrowLeft size={16} /> Marketplace
+          </Link>
+          <span style={{ color: "var(--muted)" }}>/</span>
+          <span style={{ fontSize: "0.9rem", color: "var(--text)" }}>{product.name}</span>
+        </div>
+
         <h2 className="detail-title">Detail Produk</h2>
 
         <div className="detail-layout">
@@ -44,21 +76,25 @@ export function ProductDetailPage() {
             <div className="space-y-4">
               <h1 className="detail-info__title">{product.name}</h1>
               <p className="detail-info__subtitle">
-                {product.soldCount}+ Terjual • Rating <span className="rating">★ {product.rating.toFixed(1)}</span>
+                {product.soldCount ?? 0}+ Terjual •{" "}
+                <span className="rating" style={{ display: "inline-flex", alignItems: "center", gap: "0.2rem" }}>
+                  <Star size={14} fill="#f59e0b" color="#f59e0b" />
+                  {(product.rating ?? 0).toFixed(1)}
+                </span>
               </p>
               <p className="detail-info__price">Rp. {currency.format(product.price)}</p>
               <p className="detail-info__stock">
-                Stock: <span style={{ color: "var(--success)", fontWeight: 700 }}>{product.stock}</span>
+                Stock:{" "}
+                <span style={{ color: product.stock > 0 ? "var(--success)" : "#ef4444", fontWeight: 700 }}>
+                  {product.stock > 0 ? product.stock : "Habis"}
+                </span>
               </p>
             </div>
 
             <div className="detail-badges">
               <span className="badge badge--primary">{product.variant}</span>
               <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: "var(--muted)", fontSize: "0.875rem" }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+                <MapPin size={16} />
                 <span>{product.location}</span>
               </div>
             </div>
@@ -69,11 +105,11 @@ export function ProductDetailPage() {
               </Link>
 
               <div className="quantity-control" aria-label="Jumlah pembelian">
-                <button type="button" onClick={() => setQuantity((current) => Math.max(1, current - 1))}>
+                <button type="button" onClick={() => setQuantity((c) => Math.max(1, c - 1))}>
                   -
                 </button>
                 <span>{quantity}</span>
-                <button type="button" onClick={() => setQuantity((current) => current + 1)}>
+                <button type="button" onClick={() => setQuantity((c) => c + 1)}>
                   +
                 </button>
               </div>
@@ -90,12 +126,23 @@ export function ProductDetailPage() {
               <p>{product.description}</p>
             </section>
 
+            {product.tags && product.tags.length > 0 && (
+              <section className="detail-panel">
+                <h3>Tag</h3>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                  {product.tags.map((tag) => (
+                    <span key={tag} className="badge badge--primary" style={{ fontSize: "0.75rem" }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <section className="detail-panel">
               <h3>Toko / Merchant</h3>
               <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: "var(--secondary-purple)", flexShrink: 0 }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1M5 21h14M7 3h10a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
-                </svg>
+                <Store size={24} style={{ color: "var(--secondary-purple)", flexShrink: 0 }} />
                 <div>
                   <p style={{ fontWeight: 700, color: "var(--primary-blue)", fontSize: "1.05rem" }}>
                     {product.merchant.businessName}
@@ -110,4 +157,3 @@ export function ProductDetailPage() {
     </div>
   );
 }
-
