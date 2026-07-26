@@ -5,7 +5,7 @@ import { normalizeMarketplaceQuery } from "./marketplace.validation";
 
 export class MarketplaceController {
   index = asyncHandler(async (req: Request, res: Response) => {
-    const listing = marketplaceService.listProducts(normalizeMarketplaceQuery(req.query as Record<string, unknown>));
+    const listing = await marketplaceService.listProducts(normalizeMarketplaceQuery(req.query as Record<string, unknown>));
 
     res.status(200).json({
       success: true,
@@ -25,7 +25,7 @@ export class MarketplaceController {
       return;
     }
 
-    const product = marketplaceService.getProductBySlug(slug);
+    const product = await marketplaceService.getProductBySlug(slug);
 
     if (!product) {
       res.status(404).json({

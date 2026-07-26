@@ -4,11 +4,11 @@ import type { MarketplaceListing, MarketplaceProduct, MarketplaceQuery } from ".
 export class MarketplaceService {
   constructor(private readonly repository: MarketplaceRepository = marketplaceRepository) {}
 
-  listProducts(query: MarketplaceQuery = {}): MarketplaceListing {
+  async listProducts(query: MarketplaceQuery = {}): Promise<MarketplaceListing> {
     const needle = query.q?.toLowerCase();
     const category = query.category?.toLowerCase();
 
-    let items = this.repository.findAll();
+    let items = await this.repository.findAllAsync();
 
     if (needle) {
       items = items.filter((product) => {
@@ -39,18 +39,17 @@ export class MarketplaceService {
     return {
       items,
       total: items.length,
-      categories: this.repository.findCategories(),
+      categories: await this.repository.findCategoriesAsync(),
     };
   }
 
-  getProductBySlug(slug: string): MarketplaceProduct | undefined {
-    return this.repository.findBySlug(slug);
+  async getProductBySlug(slug: string): Promise<MarketplaceProduct | undefined> {
+    return await this.repository.findBySlug(slug);
   }
 
-  getCategories() {
-    return this.repository.findCategories();
+  async getCategories() {
+    return await this.repository.findCategoriesAsync();
   }
 }
 
 export const marketplaceService = new MarketplaceService();
-

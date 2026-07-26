@@ -1,4 +1,4 @@
-﻿import { Request, Response } from "express";
+import { Request, Response } from "express";
 import { merchantService } from "../services/merchant.service";
 import { asyncHandler } from "../utils/asyncHandler";
 
@@ -7,6 +7,17 @@ export const merchantController = {
   register: asyncHandler(async (req: Request, res: Response) => {
     const mitra = await merchantService.register(req.body);
     res.status(201).json({ success: true, data: mitra });
+  }),
+
+  // GET /api/merchant/status?email=...
+  getStatusByEmail: asyncHandler(async (req: Request, res: Response) => {
+    const email = req.query.email as string;
+    if (!email) {
+      res.status(400).json({ success: false, message: "Parameter email wajib diisi" });
+      return;
+    }
+    const mitra = await merchantService.getByEmail(email);
+    res.status(200).json({ success: true, data: mitra });
   }),
 
   // GET /api/merchant/:mitraId

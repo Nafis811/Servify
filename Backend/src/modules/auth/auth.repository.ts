@@ -1,4 +1,4 @@
-﻿import bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 import { prisma } from "../../lib/prisma";
 import type { AuthUserRecord, PublicAuthUser, UserRole } from "./auth.types";
@@ -16,12 +16,47 @@ const refreshTokenStore = new Map<string, string | null>();
 export class PrismaAuthRepository {
   async findByEmail(email: string): Promise<AuthUserRecord | undefined> {
     const normalizedEmail = email.trim().toLowerCase();
+
+    // 1. Check Administrator table
+    const admin = await prisma.administrator.findUnique({ where: { email: normalizedEmail } });
+    if (admin) {
+      return {
+        id: admin.id,
+        name: admin.nama,
+        email: admin.email,
+        phone: "",
+        passwordHash: admin.password,
+        role: "admin",
+        refreshToken: refreshTokenStore.get(admin.id) ?? null,
+        createdAt: admin.createdAt.toISOString(),
+        updatedAt: admin.updatedAt.toISOString(),
+      };
+    }
+
+    // 2. Check Customer table
     const customer = await prisma.customer.findUnique({ where: { email: normalizedEmail } });
     if (!customer) return undefined;
     return this.toRecord(customer);
   }
 
   async findById(id: string): Promise<AuthUserRecord | undefined> {
+    // 1. Check Administrator table
+    const admin = await prisma.administrator.findUnique({ where: { id } });
+    if (admin) {
+      return {
+        id: admin.id,
+        name: admin.nama,
+        email: admin.email,
+        phone: "",
+        passwordHash: admin.password,
+        role: "admin",
+        refreshToken: refreshTokenStore.get(admin.id) ?? null,
+        createdAt: admin.createdAt.toISOString(),
+        updatedAt: admin.updatedAt.toISOString(),
+      };
+    }
+
+    // 2. Check Customer table
     const customer = await prisma.customer.findUnique({ where: { id } });
     if (!customer) return undefined;
     return this.toRecord(customer);

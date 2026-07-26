@@ -6,6 +6,7 @@ import { barangController } from "../controllers/barang.controller";
 export const merchantRoutes = Router();
 
 merchantRoutes.post("/register", merchantController.register);
+merchantRoutes.get("/status", merchantController.getStatusByEmail);
 merchantRoutes.get("/nearby", merchantController.listNearby);
 merchantRoutes.get("/:mitraId", merchantController.getProfile);
 merchantRoutes.patch("/:mitraId", merchantController.updateProfile);

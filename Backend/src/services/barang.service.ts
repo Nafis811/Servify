@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { AppError } from "../middlewares/errorHandler";
+import { uploadToCloudinary } from "../utils/cloudinary";
 
 export interface CreateBarangInput {
   namaBarang: string;
@@ -23,9 +24,15 @@ export const barangService = {
     const mitra = await prisma.mitraPenyediaJasa.findUnique({ where: { id: mitraId } });
     if (!mitra) throw new AppError("Mitra tidak ditemukan", 404);
 
+    let gambarUrl = data.gambarUrl;
+    if (gambarUrl) {
+      gambarUrl = await uploadToCloudinary(gambarUrl, "servify/products");
+    }
+
     return prisma.barang.create({
       data: {
         ...data,
+        gambarUrl,
         mitraId,
       },
     });
@@ -49,9 +56,18 @@ export const barangService = {
 
   async update(barangId: string, mitraId: string, data: UpdateBarangInput) {
     await this.getDetail(barangId, mitraId); // mastiin produk itu punya mitra ini
+    
+    let gambarUrl = data.gambarUrl;
+    if (gambarUrl) {
+      gambarUrl = await uploadToCloudinary(gambarUrl, "servify/products");
+    }
+
     return prisma.barang.update({
       where: { id: barangId },
-      data,
+      data: {
+        ...data,
+        ...(gambarUrl ? { gambarUrl } : {}),
+      },
     });
   },
 
@@ -59,4 +75,4 @@ export const barangService = {
     await this.getDetail(barangId, mitraId);
     return prisma.barang.delete({ where: { id: barangId } });
   },
-};
+};
