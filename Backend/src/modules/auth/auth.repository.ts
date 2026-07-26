@@ -1,69 +1,54 @@
-import bcrypt from "bcryptjs";
+﻿import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
-import type { AuthUserRecord, PublicAuthUser } from "./auth.types";
+import { prisma } from "../../lib/prisma";
+import type { AuthUserRecord, PublicAuthUser, UserRole } from "./auth.types";
 
 interface CreateUserInput {
   name: string;
   email: string;
   phone: string;
   password: string;
-  role?: AuthUserRecord["role"];
+  role?: UserRole;
 }
 
-export class InMemoryAuthRepository {
-  private readonly users = new Map<string, AuthUserRecord>();
+const refreshTokenStore = new Map<string, string | null>();
 
+export class PrismaAuthRepository {
   async findByEmail(email: string): Promise<AuthUserRecord | undefined> {
     const normalizedEmail = email.trim().toLowerCase();
-
-    for (const user of this.users.values()) {
-      if (user.email === normalizedEmail) {
-        return user;
-      }
-    }
-
-    return undefined;
+    const customer = await prisma.customer.findUnique({ where: { email: normalizedEmail } });
+    if (!customer) return undefined;
+    return this.toRecord(customer);
   }
 
   async findById(id: string): Promise<AuthUserRecord | undefined> {
-    return this.users.get(id);
+    const customer = await prisma.customer.findUnique({ where: { id } });
+    if (!customer) return undefined;
+    return this.toRecord(customer);
   }
 
   async createUser(input: CreateUserInput): Promise<AuthUserRecord> {
-    const now = new Date().toISOString();
-    const id = `usr_${randomUUID()}`;
     const passwordHash = await bcrypt.hash(input.password, 10);
-    const user: AuthUserRecord = {
-      id,
-      name: input.name.trim(),
-      email: input.email.trim().toLowerCase(),
-      phone: input.phone.trim(),
-      passwordHash,
-      role: input.role ?? "customer",
-      refreshToken: null,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    this.users.set(id, user);
-    return user;
+    const customer = await prisma.customer.create({
+      data: {
+        // Customer.id gak lagi auto-generate (sejak sync Supabase Auth dipasang),
+        // jadi wajib kasih id manual di sini kalau dead code ini dipakai lagi
+        id: randomUUID(),
+        nama: input.name.trim(),
+        email: input.email.trim().toLowerCase(),
+        noHp: input.phone.trim(),
+        password: passwordHash,
+        alamat: "", // belum dikumpulkan di form register, bisa dilengkapi user nanti
+      },
+    });
+    return this.toRecord(customer);
   }
 
   async updateRefreshToken(id: string, refreshToken: string | null): Promise<AuthUserRecord | undefined> {
-    const user = this.users.get(id);
-
-    if (!user) {
-      return undefined;
-    }
-
-    const updated: AuthUserRecord = {
-      ...user,
-      refreshToken,
-      updatedAt: new Date().toISOString(),
-    };
-
-    this.users.set(id, updated);
-    return updated;
+    const customer = await prisma.customer.findUnique({ where: { id } });
+    if (!customer) return undefined;
+    refreshTokenStore.set(id, refreshToken);
+    return this.toRecord(customer);
   }
 
   toPublicUser(user: AuthUserRecord): PublicAuthUser {
@@ -74,6 +59,30 @@ export class InMemoryAuthRepository {
       role: user.role,
     };
   }
+
+  private toRecord(customer: {
+    id: string;
+    nama: string;
+    email: string;
+    noHp: string;
+    password: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }): AuthUserRecord {
+    return {
+      id: customer.id,
+      name: customer.nama,
+      email: customer.email,
+      phone: customer.noHp,
+      // password bisa null sekarang (customer yang sync dari Supabase Auth gak punya password di Prisma),
+      // fallback ke string kosong biar tipe AuthUserRecord.passwordHash (string) tetap kepenuhi
+      passwordHash: customer.password ?? "",
+      role: "customer",
+      refreshToken: refreshTokenStore.get(customer.id) ?? null,
+      createdAt: customer.createdAt.toISOString(),
+      updatedAt: customer.updatedAt.toISOString(),
+    };
+  }
 }
 
-export const authRepository = new InMemoryAuthRepository();
+export const authRepository = new PrismaAuthRepository();

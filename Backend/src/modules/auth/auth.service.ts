@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import { env } from "../../config/env";
 import { ApiError } from "../../shared/errors/api-error";
-import { authRepository, InMemoryAuthRepository } from "./auth.repository";
+import { authRepository, PrismaAuthRepository } from "./auth.repository";
 import type { AuthSession, LoginInput, RegisterInput } from "./auth.types";
 import { validateLoginInput, validateRegisterInput } from "./auth.validation";
 
@@ -21,7 +21,7 @@ interface RefreshTokenPayload {
 }
 
 export class AuthService {
-  constructor(private readonly repository: InMemoryAuthRepository = authRepository) {}
+  constructor(private readonly repository: PrismaAuthRepository = authRepository) {}
 
   private issueTokens(userId: string, email: string, role: "customer" | "admin"): AuthSession["tokens"] {
     const accessTokenOptions: SignOptions = {

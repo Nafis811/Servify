@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+﻿import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -10,4 +10,7 @@ export const env = {
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET ?? "servify-refresh-secret",
   accessTokenTtl: process.env.ACCESS_TOKEN_TTL ?? "15m",
   refreshTokenTtl: process.env.REFRESH_TOKEN_TTL ?? "7d",
+  supabaseJwtSecret: process.env.SUPABASE_JWT_SECRET ?? "",
+  supabaseUrl: process.env.SUPABASE_URL ?? "",
+  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
 };

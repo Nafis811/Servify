@@ -1,0 +1,572 @@
+
+.merchant-page {
+  padding-bottom: 24px;
+}
+
+.merchant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.merchant-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+  border-left: 4px solid var(--primary-blue);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card--warning {
+  border-left-color: var(--warning);
+}
+
+.stat-card--success {
+  border-left-color: var(--success);
+}
+
+.stat-card__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.stat-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: 0.5rem;
+}
+
+.stat-card__value--warning {
+  color: var(--warning);
+}
+
+.stat-card__value--success {
+  color: var(--success);
+}
+
+.stat-card__icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--soft-blue);
+  color: var(--primary-blue);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.action-card {
+  border-radius: 1rem;
+  padding: 2rem;
+  color: #ffffff;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.15);
+}
+
+.action-card--blue {
+  background: linear-gradient(135deg, var(--primary-blue), var(--secondary-purple));
+}
+
+.action-card--green {
+  background: linear-gradient(135deg, #4ade80, var(--success));
+}
+
+.action-card h3 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.action-card p {
+  opacity: 0.9;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.action-card__cta {
+  display: inline-block;
+  background: #ffffff;
+  color: var(--primary-blue);
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.65rem;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.merchant-table-wrap {
+  background: var(--surface);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+.merchant-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.merchant-table-header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.merchant-table-header a {
+  color: var(--primary-blue);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.merchant-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.merchant-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.merchant-table td {
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.merchant-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+
+.merchant-empty a {
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .stat-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .action-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.reservation-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  padding: 0.5rem 1rem;
+  border-radius: 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background: var(--soft-blue);
+  color: var(--primary-blue);
+}
+
+.filter-tab--active {
+  background: var(--primary-blue);
+  color: #ffffff;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-badge--pending {
+  background: rgba(245, 158, 11, 0.16);
+  color: #b45309;
+}
+
+.status-badge--diterima {
+  background: rgba(52, 152, 219, 0.16);
+  color: #1d4ed8;
+}
+
+.status-badge--diproses {
+  background: rgba(139, 92, 246, 0.16);
+  color: #6d28d9;
+}
+
+.status-badge--selesai {
+  background: rgba(22, 163, 74, 0.16);
+  color: #15803d;
+}
+
+.status-badge--ditolak {
+  background: rgba(231, 76, 60, 0.16);
+  color: #b91c1c;
+}
+
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-table {
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 0;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-table--primary {
+  background: var(--primary-blue);
+  color: #ffffff;
+}
+
+.btn-table--secondary {
+  background: #e5e7eb;
+  color: var(--text-dark);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  max-width: 28rem;
+  width: 100%;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+}
+
+.modal-card__header {
+  background: linear-gradient(135deg, var(--primary-blue), var(--secondary-purple));
+  color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 1rem 1rem 0 0;
+}
+
+.modal-card__header h3 {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.modal-card__body {
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.modal-card__actions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.modal-card__actions button {
+  flex: 1;
+}
+
+.detail-info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.detail-info-table th {
+  text-align: left;
+  padding: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  width: 40%;
+  vertical-align: top;
+}
+
+.detail-info-table td {
+  padding: 0.75rem;
+  color: var(--text-dark);
+}
+/* --- Link kembali --- */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.65rem;
+  transition: background 0.2s ease, color 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.back-link:hover {
+  background: var(--soft-blue);
+  color: var(--primary-blue);
+}
+.back-link svg {
+  width: 1rem;
+  height: 1rem;
+}
+/* --- Form card (Tambah Produk) --- */
+.form-card {
+  background: var(--surface);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-soft);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.form-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.btn-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-group .button {
+  flex: 1;
+}
+
+@media (min-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --- Halaman FindUs --- */
+.findus-page {
+  padding-top: 1.5rem;
+  padding-bottom: 32px;
+}
+
+.findus-page .merchant-header {
+  margin-bottom: 0.35rem;
+}
+
+.findus-subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.findus-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  background: #f4f6fb;
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+}
+
+.findus-map-wrap {
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border);
+  height: 420px;
+}
+
+.findus-list {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.findus-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  padding: 0 0.25rem;
+}
+
+.findus-list-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.findus-list-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  background: var(--soft-blue);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.findus-card {
+  background: var(--surface);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.findus-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.findus-card--active {
+  border-left-color: var(--primary-blue);
+  box-shadow: 0 15px 30px rgba(52, 152, 219, 0.15);
+}
+
+.findus-card__icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  background: var(--soft-blue);
+  color: var(--primary-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.findus-card__body {
+  display: flex;
+  gap: 0.85rem;
+  flex: 1;
+}
+
+.findus-card__info h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.findus-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.findus-card__meta svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
+}
+
+.findus-card__distance {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  background: var(--soft-blue);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (min-width: 900px) {
+  .findus-layout {
+    grid-template-columns: 3fr 2fr;
+  }
+
+  .findus-map-wrap {
+    height: 600px;
+  }
+}

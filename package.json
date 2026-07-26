@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "servify",
   "private": true,
   "workspaces": [
@@ -13,3 +14,12 @@
   }
 }
 
+=======
+  "dependencies": {
+    "bcrypt": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0"
+  }
+}
+>>>>>>> 284852c0016a30b2fa85cb562a68026e26e84d38
